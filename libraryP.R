@@ -15,14 +15,12 @@ offline<-TRUE
 
 #debug<-TRUE 
 
-mcmc_length<-200
+#mcmc_length<-200
 
 dbfs<-"Distribute backwards before smoothing"
-
 jhu_str <-"CSSE John Hopkins University" # All OK 09/05/2021
 jhu_source <-"JHU CSSE COVID-19 Dataset, https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data"
 jhu_path<-"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
-
 
 world_pop<-read.csv("WPP2019_TotalPopulationBySex.csv") %>% dplyr::filter(Variant=="Medium",Time==2020)
 world_pop<-rbind(world_pop,world_pop[world_pop$Location=="United States of America",])
@@ -33,8 +31,6 @@ world_pop<-rbind(world_pop,world_pop[world_pop$Location=="Iran (Islamic Republic
 world_pop[nrow(world_pop),"Location"]<-"Iran"
 world_pop$PopTotal <-world_pop$PopTotal*1000
 
-
- 
 fdf_to_inci<-function(dataframe,dateformat){ # Filtered dataframe to incidence
   #accepts a dataframe passed like %>% rename (Dates=,Cum=) 
   return (dataframe %>% tidyr::drop_na()  %>% dplyr::mutate(dates=as.Date(dates,dateformat)) %>%
@@ -84,7 +80,6 @@ Nishiura_si<-function(){ #license non-specified
   save(si_sample_mcmc_N,SI_fit_clever_Nishiura,file="C:\\Users\\HP\\OneDrive\\Documentos\\myR\\si_sample_mcmc_N_T2k.R")
 }
 
-
 Du_si<-function(){
   dat<-data.frame(EL=0,ER=0,SL=DuXuWu["Seconday.-.symptom.onset.date"]-DuXuWu["Index.-.symptom.onset.date"],SR=DuXuWu["Seconday.-.symptom.onset.date"]-DuXuWu["Index.-.symptom.onset.date"],type=2)
   colnames(dat)<-c("EL","ER","SL","SR","type")
@@ -113,7 +108,6 @@ Ali_si<-function(){ #MIT License 15/10/2020
     mutate(mintime=min(infector_onsetDate, na.rm=TRUE)) %>%
     mutate(EL = as.numeric(infector_onsetDate - mintime), ER = as.numeric(infector_onsetDate - mintime), SL = as.numeric(infectee_onsetDate - mintime), SR = as.numeric(infectee_onsetDate - mintime),type=2) %>%
     dplyr::filter((!is.na(EL)),(!is.na(SR)),SL>ER) %>% dplyr::select(c(EL,ER,SL,SR,type))
-
   #as.numeric(max(infector_onsetDate,min(infector_isolateDate_beforeSymptom,infector_isolateDate_afterSymptom,na.rm=TRUE),na.rm=TRUE) - mintime)
   SI_fit_clever_Ali<<-coarseDataTools::dic.fit.mcmc(dat=Ali, dist= "L", init.pars = init_mcmc_params(Ali, "L"), burnin = 2000, n.samples=10000)
   check_cdt_samples_convergence(SI_fit_clever_Ali@samples)
@@ -127,8 +121,6 @@ Ali_si<-function(){ #MIT License 15/10/2020
 #Du_si()
 #Zhao_si()
 #Ali_si()
-
-
 
 gamma_m_to_par<-function(mean,sd){
   theta<-sd^2/mean
